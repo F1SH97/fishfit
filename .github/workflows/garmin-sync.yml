@@ -1,9 +1,11 @@
 name: Garmin data sync
 
 # Fetches live Garmin Connect metrics and commits data/garmin.json, which the
-# dashboard reads at runtime. Until a GARMINTOKENS (or GARMIN_EMAIL/PASSWORD)
-# secret is configured, the job checks out and then exits cleanly — nothing is
-# fetched or committed, so the site keeps serving its built-in fixtures.
+# dashboard reads at runtime. Auth is token-only: set a GARMINTOKENS secret
+# (see scripts/garmin_auth.py). No Garmin email or password is ever stored in
+# or referenced by GitHub. Until the secret is configured, the job checks out
+# and exits cleanly — nothing fetched or committed — so the site keeps serving
+# its built-in fixtures.
 
 on:
   schedule:
@@ -29,13 +31,12 @@ jobs:
         id: creds
         env:
           GARMINTOKENS: ${{ secrets.GARMINTOKENS }}
-          GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
         run: |
-          if [ -n "$GARMINTOKENS" ] || [ -n "$GARMIN_EMAIL" ]; then
+          if [ -n "$GARMINTOKENS" ]; then
             echo "has=true" >> "$GITHUB_OUTPUT"
           else
             echo "has=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No Garmin secret configured — skipping sync. Add GARMINTOKENS to enable live data."
+            echo "::notice::No GARMINTOKENS secret configured — skipping sync. Add it to enable live data."
           fi
 
       - name: Set up Python
@@ -51,10 +52,8 @@ jobs:
       - name: Fetch Garmin data
         if: steps.creds.outputs.has == 'true'
         env:
+          # Token-only: the workflow never references a Garmin email or password.
           GARMINTOKENS: ${{ secrets.GARMINTOKENS }}
-          GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
-          GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
-          GARMIN_IS_CN: ${{ secrets.GARMIN_IS_CN }}
         run: python scripts/fetch_garmin.py
 
       - name: Commit updated data

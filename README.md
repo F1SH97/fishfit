@@ -42,8 +42,9 @@ built-in demo fixtures, so the site never breaks.
    runs daily at 06:15 UTC). It commits `data/garmin.json`, Pages redeploys, and
    the dashboard header switches to a green **Live** badge.
 
-> Prefer the token over storing `GARMIN_EMAIL`/`GARMIN_PASSWORD`, so your password
-> never lives in GitHub. Tokens last ~1 year; re-run step 1 to refresh.
+> Auth is **token-only**: your Garmin email/password are entered locally by
+> `garmin_auth.py` to mint the token and are never stored in or referenced by
+> GitHub. Tokens last ~1 year; re-run step 1 to refresh.
 
 ## ⚠️ Privacy note
 

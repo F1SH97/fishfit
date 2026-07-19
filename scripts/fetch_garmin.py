@@ -6,12 +6,9 @@ same underlying `python-garminconnect` library that the MCP is built on, but run
 headless in CI (GitHub Actions) instead of as an interactive MCP server, because a
 static GitHub Pages site cannot speak the MCP protocol or reach a local server.
 
-Auth (in order of preference):
-  1. GARMINTOKENS         - a garth token string produced once locally by
-                            scripts/garmin_auth.py (handles MFA at that step).
-                            Recommended: no password ever lands in CI.
-  2. GARMIN_EMAIL + GARMIN_PASSWORD - direct login (only works for accounts
-                            without MFA). Kept as a fallback.
+Auth is token-only by design: the GARMINTOKENS env var holds a garth token
+string minted once locally by scripts/garmin_auth.py (which handles MFA at that
+step). No Garmin email or password is ever read here or stored in CI.
 
 The script is defensive: every metric is fetched in isolation, so a single failing
 endpoint never aborts the run. If authentication itself fails it exits non-zero so
@@ -44,7 +41,7 @@ def log(msg: str) -> None:
 
 
 def authenticate() -> Garmin:
-    """Return a logged-in Garmin client, or raise."""
+    """Return a logged-in Garmin client, or raise. Token-only — no password path."""
     tokens = os.getenv("GARMINTOKENS")
     if tokens and len(tokens.strip()) > 512:
         log("Authenticating with stored garth tokens (GARMINTOKENS).")
@@ -52,17 +49,10 @@ def authenticate() -> Garmin:
         api.login(tokens.strip())
         return api
 
-    email = os.getenv("GARMIN_EMAIL")
-    password = os.getenv("GARMIN_PASSWORD")
-    if email and password:
-        log("Authenticating with GARMIN_EMAIL / GARMIN_PASSWORD.")
-        api = Garmin(email, password, is_cn=os.getenv("GARMIN_IS_CN") == "1")
-        api.login()
-        return api
-
     raise SystemExit(
-        "No Garmin credentials found. Set the GARMINTOKENS secret "
-        "(preferred, see scripts/garmin_auth.py) or GARMIN_EMAIL + GARMIN_PASSWORD."
+        "No GARMINTOKENS found. Mint one locally with scripts/garmin_auth.py and "
+        "store it as the GARMINTOKENS secret. (Email/password auth is intentionally "
+        "not supported here so no credentials are stored in GitHub.)"
     )
 
 
