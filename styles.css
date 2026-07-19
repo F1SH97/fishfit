@@ -119,4 +119,52 @@ button:focus-visible,.nav:focus-visible,.seg:focus-visible,.daysel:focus-visible
   .board{grid-template-columns:repeat(3,1fr)}
   .rulegrid{grid-template-columns:1fr}
 }
+
+/* ---- Phone / narrow-portrait layout --------------------------------------
+   Below this width the fixed 224px sidebar would swallow most of the screen,
+   so the shell stacks vertically and the sidebar becomes a horizontal,
+   scrollable top navigation. This makes the app fully legible in portrait
+   without the user needing to rotate or zoom. */
+@media (max-width:760px){
+  html,body{overflow-x:hidden}
+  .pos-root{flex-direction:column;min-height:100vh}
+
+  /* Sidebar -> sticky horizontal top nav */
+  .sidebar{width:100%;height:auto;flex-direction:row;align-items:center;
+    gap:8px;padding:10px 12px;border-right:none;border-bottom:1px solid var(--line);
+    position:sticky;top:0;z-index:30;overflow-x:auto;-webkit-overflow-scrolling:touch;
+    background:rgba(14,20,32,0.92);backdrop-filter:blur(8px)}
+  .sidebar-brand{padding:0 8px 0 2px !important;flex-shrink:0}
+  .navwrap{display:flex;flex-direction:row;gap:6px;flex:1;min-width:0}
+  .sidebar-foot{display:none}
+  .nav{width:auto;flex:0 0 auto;white-space:nowrap;padding:8px 12px}
+
+  /* Main content spacing tightened for small screens */
+  .main{min-height:auto}
+  .topbar{padding:16px 16px 10px}
+  .topbar h1{font-size:17px !important}
+  .banner{margin:0 16px}
+  .content{padding:16px 16px 40px;max-width:100%}
+  .stack{gap:16px}
+
+  /* Two-up metric grids collapse to a single readable column */
+  .grid4,.gridM{grid-template-columns:1fr;gap:12px}
+
+  /* Long single-line chips (e.g. the status pill) may wrap on small screens */
+  .chip{white-space:normal}
+
+  /* Goal hero and weekly board stack instead of squeezing */
+  .hero-card{grid-template-columns:1fr !important;gap:16px}
+  .board{grid-template-columns:1fr}
+  .col{min-height:0}
+
+  /* Wide tables scroll horizontally inside their card instead of overflowing */
+  .tbl-card{overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .tbl-card table{min-width:520px}
+
+  /* Modals sit flush on small screens */
+  .overlay{padding:12px}
+  .modal{padding:18px;max-height:92vh}
+}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
