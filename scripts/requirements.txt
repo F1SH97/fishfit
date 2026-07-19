@@ -1,0 +1,2 @@
+# Pinned to match the taxuspt/garmin_mcp foundation (python-garminconnect).
+garminconnect==0.3.2
