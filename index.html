@@ -11,8 +11,13 @@
   <div id="app"></div>
   <div id="modal-root"></div>
 
-  <!-- Icons (only external dependency). Pinned for stability. -->
-  <script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+  <!-- Icons (only external dependency). Pinned + Subresource Integrity:
+       the browser refuses to run the file unless its SHA-384 matches, so a
+       tampered/compromised CDN response is blocked instead of executed. -->
+  <script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"
+          integrity="sha384-m/CoPp6wBQz6MoZXP+VveuxfvSx0NGXiQyyakzXVOVHgG1fP5bM/UiO4pSNPV6PT"
+          crossorigin="anonymous"
+          referrerpolicy="no-referrer"></script>
   <script src="app.js"></script>
 </body>
 </html>
