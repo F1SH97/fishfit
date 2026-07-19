@@ -1,0 +1,4 @@
+{
+  "live": false,
+  "note": "Placeholder. The Garmin data sync workflow overwrites this with live=true once a GARMINTOKENS secret is configured. While live=false the dashboard shows its built-in demo fixtures."
+}

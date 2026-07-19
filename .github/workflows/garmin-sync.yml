@@ -1,0 +1,71 @@
+name: Garmin data sync
+
+# Fetches live Garmin Connect metrics and commits data/garmin.json, which the
+# dashboard reads at runtime. Until a GARMINTOKENS (or GARMIN_EMAIL/PASSWORD)
+# secret is configured, the job checks out and then exits cleanly — nothing is
+# fetched or committed, so the site keeps serving its built-in fixtures.
+
+on:
+  schedule:
+    - cron: "15 6 * * *"   # daily at 06:15 UTC
+  workflow_dispatch:        # allow manual runs from the Actions tab
+
+# Prevent overlapping runs from racing on the commit.
+concurrency:
+  group: garmin-sync
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for credentials
+        id: creds
+        env:
+          GARMINTOKENS: ${{ secrets.GARMINTOKENS }}
+          GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
+        run: |
+          if [ -n "$GARMINTOKENS" ] || [ -n "$GARMIN_EMAIL" ]; then
+            echo "has=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::No Garmin secret configured — skipping sync. Add GARMINTOKENS to enable live data."
+          fi
+
+      - name: Set up Python
+        if: steps.creds.outputs.has == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        if: steps.creds.outputs.has == 'true'
+        run: pip install -r scripts/requirements.txt
+
+      - name: Fetch Garmin data
+        if: steps.creds.outputs.has == 'true'
+        env:
+          GARMINTOKENS: ${{ secrets.GARMINTOKENS }}
+          GARMIN_EMAIL: ${{ secrets.GARMIN_EMAIL }}
+          GARMIN_PASSWORD: ${{ secrets.GARMIN_PASSWORD }}
+          GARMIN_IS_CN: ${{ secrets.GARMIN_IS_CN }}
+        run: python scripts/fetch_garmin.py
+
+      - name: Commit updated data
+        if: steps.creds.outputs.has == 'true'
+        run: |
+          if git status --porcelain data/garmin.json | grep -q .; then
+            git config user.name  "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add data/garmin.json
+            git commit -m "chore(data): sync Garmin metrics"
+            git push
+          else
+            echo "No data change — nothing to commit."
+          fi

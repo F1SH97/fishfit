@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Node / test tooling
+node_modules/
+package.json
+package-lock.json
+
+# Garmin auth artifacts — NEVER commit these
+.garminconnect/
+*.garth
+garmin_tokens*
+GARMINTOKENS*

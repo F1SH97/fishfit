@@ -165,6 +165,7 @@
   const state = {
     view:"Dashboard",
     modal:null,            // {type:'metric', key, win} | {type:'score',key} | {type:'goal'} | {type:'session', id}
+    live:null,             // set to {syncedAt, source} once live Garmin data is applied
     week:CURRENT_WEEK,
     schedule:buildSchedule(),
     oneRM:{ bench:{v:82,src:"est",date:"2 Jul"}, squat:{v:110,src:"est",date:"28 Jun"}, deadlift:{v:140,src:"est",date:"25 Jun"} }
@@ -516,9 +517,15 @@
     const sidebar='<aside class="sidebar"><div class="sidebar-brand" style="display:flex;align-items:center;gap:10px;padding:4px 6px 22px"><div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--warm),var(--coral));display:grid;place-items:center;color:#0E1420">'+ic("sunrise",17)+'</div><div><div style="font-weight:700;font-size:14.5px;color:var(--text);letter-spacing:-0.2px">PerformanceOS</div><div style="font-size:10px;color:var(--muted)">personal \u00b7 Garmin-first</div></div></div>'
       +'<nav class="navwrap">'+NAV.map(n=>'<button class="nav'+(state.view===n[0]?' navOn':'')+'" data-action="view" data-view="'+n[0]+'">'+ic(n[1],17)+' '+n[0]+'</button>').join("")+'</nav>'
       +'<div class="sidebar-foot" style="margin-top:auto;padding-top:16px"><div class="pcard" style="padding:12px;background:var(--panel2)"><div style="display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--dim);font-weight:600">'+ic("radio",13)+' Data source</div><div style="font-size:11px;color:var(--muted);margin:6px 0 9px;line-height:1.4">Fixtures modeled on Garmin MCP tool outputs.</div><button class="connectbtn">'+ic("zap",12)+' Connect Garmin MCP</button></div></div></aside>';
+    const syncChip=state.live
+      ? '<span class="chip" style="border-color:rgba(100,224,163,0.4);color:var(--good)">'+ic("radio",13)+' Live '+syncAgo(state.live.syncedAt)+'</span>'
+      : '<span class="chip">'+ic("radio",13)+' Demo data</span>';
+    const banner=state.live
+      ? '<div class="banner" style="border-color:rgba(100,224,163,0.28);background:linear-gradient(90deg,rgba(100,224,163,0.10),rgba(100,224,163,0.02))"><span style="display:inline-flex;align-items:center;gap:8px;color:var(--good)">'+ic("check-circle-2",14)+' Live data from '+esc(state.live.source||"Garmin Connect")+' — last synced '+syncAgo(state.live.syncedAt)+'.</span></div>'
+      : '<div class="banner"><span style="display:inline-flex;align-items:center;gap:8px">'+ic("shield-alert",14)+' Demo data shaped like real Garmin outputs. Add a GARMINTOKENS secret to sync live; the UI won\'t change.</span></div>';
     const main='<main class="main"><header class="topbar"><div><h1 style="margin:0;font-size:19px;font-weight:600;color:var(--text)">'+state.view+'</h1><span style="font-size:12px;color:var(--muted)">'+SUBTITLE[state.view]+'</span></div>'
-      +'<div style="display:flex;align-items:center;gap:10px"><span class="chip">'+ic("calendar",13)+' '+daysTo+' days to '+RACE.name+'</span><span class="chip">'+ic("radio",13)+' Synced 2h ago</span></div></header>'
-      +'<div class="banner"><span style="display:inline-flex;align-items:center;gap:8px">'+ic("shield-alert",14)+' Prototype — fixture data shaped like real Garmin MCP outputs. Connect the MCP to go live; the UI won\'t change.</span></div>'
+      +'<div style="display:flex;align-items:center;gap:10px"><span class="chip">'+ic("calendar",13)+' '+daysTo+' days to '+RACE.name+'</span>'+syncChip+'</div></header>'
+      +banner
       +'<div class="content fade">'+viewHTML()+'</div></main>';
     return sidebar+main;
   }
@@ -580,5 +587,39 @@
     if(w>0&&r>0){ state.oneRM[lift]={v:epley(w,r),src:"manual",date:"3 Jul"}; render(); }
   }
 
+  /* --------------------------- live Garmin data -------------------------- */
+  function syncAgo(iso){
+    const t=Date.parse(iso); if(isNaN(t)) return "recently";
+    const s=Math.max(0,(Date.now()-t)/1000);
+    if(s<90) return "just now";
+    if(s<5400) return Math.round(s/60)+"m ago";
+    if(s<172800) return Math.round(s/3600)+"h ago";
+    return Math.round(s/86400)+"d ago";
+  }
+  // Overlay live values from data/garmin.json onto the fixtures, in place.
+  function applyLive(data){
+    if(!data || data.live!==true) return false;
+    const m=data.metrics||{};
+    Object.keys(m).forEach(k=>{ const t=byKey(k); if(t && m[k]!=null && m[k]!=="") t.value=String(m[k]); });
+    const sc=data.scores||{};
+    Object.keys(sc).forEach(k=>{ const t=SCORES.find(s=>s.key===k); if(t && typeof sc[k]==="number") t.value=sc[k]; });
+    if(Array.isArray(data.runs) && data.runs.length){
+      const clean=data.runs.filter(r=>r&&r.dist>0).map(r=>({
+        date:String(r.date||""), type:String(r.type||"Run"),
+        dist:+r.dist||0, paceSec:+r.paceSec||0, hr:+r.hr||0, tag:String(r.tag||"")
+      }));
+      if(clean.length){ RUNS.length=0; clean.forEach(r=>RUNS.push(r)); }
+    }
+    state.live={ syncedAt:data.syncedAt, source:data.source };
+    return true;
+  }
+  function loadLiveData(){
+    fetch("data/garmin.json?t="+Date.now(),{cache:"no-store"})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{ if(applyLive(d)) render(); })
+      .catch(()=>{ /* offline or no file — keep demo fixtures */ });
+  }
+
   render();
+  loadLiveData();
 })();
