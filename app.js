@@ -25,8 +25,11 @@
 
   /* ------------------------------ fixtures ------------------------------- */
   const RACE = { name:"Bridge to Brisbane", dist:"10 km", date:new Date("2026-09-13T07:00:00"), goalSec:3600 };
-  const TODAY = new Date("2026-07-03T00:00:00");
-  const daysTo = Math.round((RACE.date - TODAY) / 86400000);
+  const TODAY = new Date("2026-07-03T00:00:00"); // anchors the demo training-block schedule
+  const daysTo = Math.max(0, Math.round((RACE.date - new Date()) / 86400000)); // live countdown to race day
+  // Live-overridable race projection (seconds for 10 km) + confidence band; updated by applyLive().
+  const PROJ = { k10: 3590, band: [3500, 3680] };
+  const round2 = (v) => (typeof v === "number" && isFinite(v)) ? String(+v.toFixed(2)) : v;
 
   const SCORES = [
     {key:"performance",label:"Performance",value:74,src:"Garmin Training Status",accent:"warm",note:"Productive — VO\u2082max trending up over the block.",inputs:[["Training Status","Productive"],["VO\u2082max trend","+2 in 90d"],["Acute load","420 / balanced"]]},
@@ -183,7 +186,7 @@
     const dom=niceDomain(all); const n=rows.length;
     const x=(i)=> pL + (W-pL-pR)*(n<2?0:(i/(n-1)));
     const y=(v)=> pT + (H-pT-pB)*(1-(v-dom[0])/((dom[1]-dom[0])||1));
-    const fmtY=opts.fmtY||((v)=>v);
+    const fmtY=opts.fmtY||round2;
     let g="";
     for(let t=0;t<=3;t++){ const v=dom[0]+(dom[1]-dom[0])*t/3; const yy=y(v); g+='<line x1="'+pL+'" y1="'+yy+'" x2="'+(W-pR)+'" y2="'+yy+'" stroke="var(--line)" stroke-width="1"/>'; g+='<text class="cx" x="'+(pL-6)+'" y="'+(yy+3)+'" text-anchor="end">'+fmtY(v)+'</text>'; }
     let xl=""; const step=Math.max(1,Math.round(n/6));
@@ -201,7 +204,7 @@
     const dom=[0, Math.max.apply(null,all)*1.1]; const n=rows.length;
     const x=(i)=> pL + (W-pL-pR)*(n<2?0.5:(i/(n-1)));
     const y=(v)=> pT + (H-pT-pB)*(1-(v-dom[0])/((dom[1]-dom[0])||1));
-    const fmtY=opts.fmtY||((v)=>v);
+    const fmtY=opts.fmtY||round2;
     let g="";
     for(let t=0;t<=3;t++){ const v=dom[0]+(dom[1]-dom[0])*t/3; const yy=y(v); g+='<line x1="'+pL+'" y1="'+yy+'" x2="'+(W-pR)+'" y2="'+yy+'" stroke="var(--line)" stroke-width="1"/>'; g+='<text class="cx" x="'+(pL-6)+'" y="'+(yy+3)+'" text-anchor="end">'+fmtY(v)+'</text>'; }
     const bw=Math.max(4,(W-pL-pR)/n*0.6);
@@ -213,7 +216,9 @@
   }
   function trajectoryChart(){
     const W=560,H=200,pL=46,pR=10,pT=8,pB=20; const d=TRAJECTORY; const n=d.length;
-    const dom=[3450,3760];
+    let mn=Math.min.apply(null,d.map(r=>r.lo).concat([RACE.goalSec]));
+    let mx=Math.max.apply(null,d.map(r=>r.hi).concat([RACE.goalSec]));
+    const pad=(mx-mn)*0.10||30; const dom=[mn-pad, mx+pad];
     const x=(i)=> pL + (W-pL-pR)*(i/(n-1));
     const y=(v)=> pT + (H-pT-pB)*(1-(v-dom[0])/(dom[1]-dom[0]));
     let g=""; for(let t=0;t<=3;t++){ const v=dom[0]+(dom[1]-dom[0])*t/3; const yy=y(v); g+='<line x1="'+pL+'" y1="'+yy+'" x2="'+(W-pR)+'" y2="'+yy+'" stroke="var(--line)"/>'; g+='<text class="cx" x="'+(pL-6)+'" y="'+(yy+3)+'" text-anchor="end">'+mmss(v)+'</text>'; }
@@ -277,7 +282,7 @@
       +'<span style="font-size:11.5px;color:var(--dim);line-height:1.35">'+s.note+'</span></button>';
   }
   function goalHero(clickable){
-    const proj=3590, onTrack=proj<RACE.goalSec;
+    const proj=PROJ.k10, onTrack=proj<RACE.goalSec;
     return '<div class="pcard hero-card'+(clickable?' lift':'')+'"'+(clickable?' data-action="goal"':'')+' style="padding:20px;display:grid;grid-template-columns:1.1fr 1.4fr;gap:22px'+(clickable?';cursor:pointer':'')+'">'
       +'<div style="display:flex;flex-direction:column;justify-content:space-between">'
         +'<div><div style="display:flex;justify-content:space-between;align-items:center"><span style="display:inline-flex;align-items:center;gap:8px;color:var(--warm);font-size:12px;font-weight:600">'+ic("sunrise",15)+' RACE GOAL</span>'+(clickable?'<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--muted)">'+ic("maximize-2",12)+' tap to explore</span>':'')+'</div>'
@@ -316,8 +321,8 @@
   }
   function runningView(){
     const predictor='<div class="pcard" style="padding:18px">'+cardHead("flag","Race predictor","Blended model \u00b7 updates with each run")
-      +'<div style="display:flex;align-items:baseline;gap:12px;margin:14px 0 6px"><span class="num" style="font-size:40px;font-weight:600;color:var(--good)">59:50</span><span style="color:var(--muted);font-size:13px">projected 10 km</span></div>'
-      +'<div style="font-size:12.5px;color:var(--dim)">Confidence range <b style="color:var(--text)">58:20 \u2013 61:20</b></div>'
+      +'<div style="display:flex;align-items:baseline;gap:12px;margin:14px 0 6px"><span class="num" style="font-size:40px;font-weight:600;color:var(--good)">'+mmss(PROJ.k10)+'</span><span style="color:var(--muted);font-size:13px">projected 10 km</span></div>'
+      +'<div style="font-size:12.5px;color:var(--dim)">Confidence range <b style="color:var(--text)">'+mmss(PROJ.band[0])+' \u2013 '+mmss(PROJ.band[1])+'</b></div>'
       +'<div style="height:8px;background:var(--track);border-radius:8px;margin:12px 0;position:relative"><div style="position:absolute;left:18%;right:34%;top:0;bottom:0;background:var(--warm);opacity:.4;border-radius:8px"></div><div style="position:absolute;left:42%;top:-3px;width:3px;height:14px;background:var(--text);border-radius:3px"></div><div style="position:absolute;left:50%;top:-3px;width:2px;height:14px;background:var(--good)"></div></div>'
       +'<div style="display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted)"><span>57:00</span><span style="color:var(--good)">60:00 goal</span><span>63:00</span></div>'
       +'<p style="font-size:11.5px;color:var(--muted);margin-top:12px;line-height:1.5">Riegel projection from your 5k PB blended with a VO\u2082max estimate. The band tightens after your Week 14 benchmark 5k.</p></div>';
@@ -430,7 +435,7 @@
     const pct=first?((last-first)/Math.abs(first))*100:0;
     const improved=m.polarity==="neutral"?null:(m.polarity==="down"?last<first:last>first);
     const rows=slice.map((d,i)=>({label:shortDate(d.date),value:vals[i],avg:avg[i],trend:+(reg.intercept+reg.slope*i).toFixed(2)}));
-    const fmtY=(v)=> m.isTime?mmss(v):(m.fmt?m.fmt(v):v);
+    const fmtY=(v)=> m.isTime?mmss(v):(m.fmt?m.fmt(v):round2(v));
     const chart=m.chart==="bar"?barChart(rows,{fmtY:fmtY,avg:true}):lineChart(rows,{fmtY:fmtY,avg:true,trend:true});
     const dir=improved==null?"flat":(improved?"up":"down");
     const dirColor=dir==="up"?"var(--good)":dir==="down"?"var(--bad)":"var(--muted)";
@@ -458,11 +463,11 @@
       +'<p style="font-size:11px;color:var(--muted);margin-top:12px">For now this reads Garmin\'s own metric and adds a coaching layer. A custom composite is on the roadmap.</p></div>';
   }
   function goalModal(){
-    const proj=3590, base=3696, net=proj-base;
+    const proj=PROJ.k10, base=3696, net=proj-base;
     return '<div class="modal" style="max-width:760px"><div style="display:flex;justify-content:space-between;align-items:flex-start"><div>'
       +'<span style="display:inline-flex;align-items:center;gap:8px;color:var(--warm);font-size:12px;font-weight:600">'+ic("sunrise",15)+' RACE GOAL \u00b7 WHAT\'S DRIVING IT</span>'
       +'<h3 style="margin:8px 0 2px;font-size:18px;font-weight:600;color:var(--text)">'+RACE.name+' — sub-'+mmss(RACE.goalSec)+'</h3>'
-      +'<span style="font-size:12.5px;color:var(--muted)">'+daysTo+' days out \u00b7 projected '+mmss(proj)+' ('+mmss(3500)+'\u2013'+mmss(3680)+')</span></div>'
+      +'<span style="font-size:12.5px;color:var(--muted)">'+daysTo+' days out \u00b7 projected '+mmss(proj)+' ('+mmss(PROJ.band[0])+'\u2013'+mmss(PROJ.band[1])+')</span></div>'
       +'<button class="iconbtn" data-action="close">'+ic("x",18)+'</button></div>'
       +'<div style="height:200px;margin-top:14px">'+trajectoryChart()+'</div>'
       +'<div class="coachbox" style="margin-top:8px;display:flex;align-items:center;gap:16px"><div><div style="font-size:11px;color:var(--muted)">Since you set this goal</div><div class="num" style="font-size:26px;font-weight:600;color:var(--good)">'+mmss(Math.abs(net))+' faster</div></div>'
@@ -609,6 +614,21 @@
         dist:+r.dist||0, paceSec:+r.paceSec||0, hr:+r.hr||0, tag:String(r.tag||"")
       }));
       if(clean.length){ RUNS.length=0; clean.forEach(r=>RUNS.push(r)); }
+    }
+    // Live race predictor (projected 10 km) — Garmin's own prediction
+    const p=data.predictions||{};
+    if(typeof p.k10==="number" && p.k10>0){
+      PROJ.k10=Math.round(p.k10);
+      PROJ.band=(Array.isArray(p.band)&&p.band.length===2)
+        ? p.band.map(x=>Math.round(+x))
+        : [Math.round(PROJ.k10*0.975), Math.round(PROJ.k10*1.025)];
+      // Slide the trajectory curve so its final point lands on the live projection (keeps the shape)
+      const shift=PROJ.k10 - TRAJECTORY[TRAJECTORY.length-1].p;
+      TRAJECTORY.forEach(t=>{ t.p+=shift; t.lo+=shift; t.hi+=shift; });
+      // Refresh the Race Predictor agent card copy
+      const ag=AGENTS.find(a=>a.name==="Race Predictor");
+      if(ag) ag.out="Projected 10k "+mmss(PROJ.k10)+" ("+mmss(PROJ.band[0])+"–"+mmss(PROJ.band[1])+"). "
+        +(PROJ.k10<RACE.goalSec?"On the right side of "+mmss(RACE.goalSec)+".":"Above "+mmss(RACE.goalSec)+" — keep sharpening.");
     }
     state.live={ syncedAt:data.syncedAt, source:data.source };
     return true;

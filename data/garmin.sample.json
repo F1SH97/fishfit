@@ -1,23 +1,28 @@
 {
   "live": true,
-  "syncedAt": "2026-07-19T06:15:00+00:00",
+  "syncedAt": "2026-08-10T22:41:33+00:00",
   "source": "Garmin Connect",
   "metrics": {
-    "vo2": "47",
-    "load": "430",
-    "hrv": "64",
-    "sleep": "82",
-    "rhr": "47",
-    "battery": "71",
-    "weight": "74.2",
-    "wdist": "45"
+    "vo2": "44.8",
+    "hrv": "103",
+    "sleep": "87",
+    "rhr": "41",
+    "battery": "36",
+    "wdist": "4",
+    "pb5": "27:41",
+    "pb10": "1:03:23"
   },
   "scores": {
-    "readiness": 79
+    "readiness": 75
+  },
+  "predictions": {
+    "k10": 3451,
+    "k5": 1620,
+    "band": [3365, 3537]
   },
   "runs": [
-    { "date": "Fri 17 Jul", "type": "Threshold 4x8", "dist": 10.2, "paceSec": 330, "hr": 170, "tag": "" },
-    { "date": "Wed 15 Jul", "type": "Easy", "dist": 6.4, "paceSec": 400, "hr": 137, "tag": "" },
-    { "date": "Sun 13 Jul", "type": "Long run", "dist": 15.1, "paceSec": 408, "hr": 146, "tag": "" }
+    { "date": "Wed 5 Aug", "type": "Brisbane - Tempo", "dist": 4.0, "paceSec": 381, "hr": 150, "tag": "" },
+    { "date": "Thu 30 Jul", "type": "Airlie Beach Running", "dist": 6.0, "paceSec": 390, "hr": 167, "tag": "" },
+    { "date": "Sat 25 Jul", "type": "Brisbane Running", "dist": 10.0, "paceSec": 380, "hr": 169, "tag": "" }
   ]
 }

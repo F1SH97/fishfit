@@ -76,6 +76,13 @@ def first_num(d, *keys):
     return None
 
 
+def fmt_time(sec):
+    """Format seconds as h:mm:ss (>= 1h) or m:ss, matching how Garmin shows times."""
+    sec = int(round(sec))
+    h, m, s = sec // 3600, (sec % 3600) // 60, sec % 60
+    return f"{h}:{m:02d}:{s:02d}" if h else f"{m}:{s:02d}"
+
+
 def fetch(api: Garmin) -> dict:
     today = date.today()
     iso = today.isoformat()
@@ -160,6 +167,36 @@ def fetch(api: Garmin) -> dict:
         if v:
             scores["readiness"] = round(v)
 
+    # ---- Race predictions (Garmin's projected finish times) --------------
+    predictions: dict[str, object] = {}
+    rp = safe(api.get_race_predictions, label="race_predictions")
+    if isinstance(rp, list) and rp:
+        rp = rp[-1]
+    if isinstance(rp, dict):
+        k10 = first_num(rp, "raceTime10K", "time10K", "raceTime10k")
+        k5 = first_num(rp, "raceTime5K", "time5K", "raceTime5k")
+        if k10 and 900 < k10 < 12000:
+            predictions["k10"] = round(k10)
+            predictions["band"] = [round(k10 * 0.975), round(k10 * 1.025)]
+        if k5 and 600 < k5 < 6000:
+            predictions["k5"] = round(k5)
+
+    # ---- Personal records: 5 km / 10 km bests ----------------------------
+    # Garmin personal-record typeIds: 3 = 5 km, 4 = 10 km; value is time in seconds.
+    pr = safe(api.get_personal_record, label="personal_record")
+    if isinstance(pr, list):
+        for rec in pr:
+            if not isinstance(rec, dict):
+                continue
+            tid = rec.get("typeId")
+            val = first_num(rec, "value")
+            if not val:
+                continue
+            if tid == 3 and 600 <= val <= 3600:
+                metrics["pb5"] = fmt_time(val)
+            elif tid == 4 and 1200 <= val <= 7200:
+                metrics["pb10"] = fmt_time(val)
+
     # ---- Recent running activities --------------------------------------
     runs = []
     weekly_km = 0.0
@@ -209,6 +246,7 @@ def fetch(api: Garmin) -> dict:
         "source": "Garmin Connect",
         "metrics": metrics,
         "scores": scores,
+        "predictions": predictions,
         "runs": runs,
     }
     return out
@@ -225,7 +263,7 @@ def main() -> int:
         return 1
 
     data = fetch(api)
-    n = len(data["metrics"]) + len(data["scores"]) + len(data["runs"])
+    n = len(data["metrics"]) + len(data["scores"]) + len(data["runs"]) + len(data["predictions"])
     if n == 0:
         log("Authenticated but fetched zero data points; leaving existing file untouched.")
         return 1
