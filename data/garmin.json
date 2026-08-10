@@ -1,4 +1,58 @@
 {
-  "live": false,
-  "note": "Placeholder. The Garmin data sync workflow overwrites this with live=true once a GARMINTOKENS secret is configured. While live=false the dashboard shows its built-in demo fixtures."
+  "live": true,
+  "syncedAt": "2026-08-10T22:41:33+00:00",
+  "source": "Garmin Connect",
+  "metrics": {
+    "vo2": "44.8",
+    "hrv": "103",
+    "sleep": "87",
+    "rhr": "41",
+    "battery": "36",
+    "wdist": "4"
+  },
+  "scores": {
+    "readiness": 75
+  },
+  "runs": [
+    {
+      "date": "Wed 5 Aug",
+      "type": "Brisbane - Tempo",
+      "dist": 4.0,
+      "paceSec": 381,
+      "hr": 150,
+      "tag": ""
+    },
+    {
+      "date": "Thu 30 Jul",
+      "type": "Airlie Beach Running",
+      "dist": 6.0,
+      "paceSec": 390,
+      "hr": 167,
+      "tag": ""
+    },
+    {
+      "date": "Sat 25 Jul",
+      "type": "Brisbane Running",
+      "dist": 10.0,
+      "paceSec": 380,
+      "hr": 169,
+      "tag": ""
+    },
+    {
+      "date": "Mon 20 Jul",
+      "type": "Brisbane Running",
+      "dist": 4.6,
+      "paceSec": 392,
+      "hr": 162,
+      "tag": ""
+    },
+    {
+      "date": "Fri 17 Jul",
+      "type": "Brisbane Running",
+      "dist": 3.0,
+      "paceSec": 415,
+      "hr": 166,
+      "tag": ""
+    }
+  ]
 }
