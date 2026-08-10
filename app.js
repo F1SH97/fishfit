@@ -29,6 +29,9 @@
   const daysTo = Math.max(0, Math.round((RACE.date - new Date()) / 86400000)); // live countdown to race day
   // Live-overridable race projection (seconds for 10 km) + confidence band; updated by applyLive().
   const PROJ = { k10: 3590, band: [3500, 3680] };
+  // Weekly check-in destination. To point at a Claude Project later, change ONLY this
+  // one value to your project URL (e.g. "https://claude.ai/project/<id>"); nothing else changes.
+  const COACH_BASE = "https://claude.ai/new";
   const round2 = (v) => (typeof v === "number" && isFinite(v)) ? String(+v.toFixed(2)) : v;
 
   const SCORES = [
@@ -532,7 +535,8 @@
       +'<div style="display:flex;align-items:center;gap:10px"><span class="chip">'+ic("calendar",13)+' '+daysTo+' days to '+RACE.name+'</span>'+syncChip+'</div></header>'
       +banner
       +'<div class="content fade">'+viewHTML()+'</div></main>';
-    return sidebar+main;
+    const coachFab='<button class="coachfab" data-action="coach" title="Send your coach a weekly check-in (opens Claude, pre-filled with this week\'s data)">'+ic("message-circle",18)+'<span>Weekly check-in</span></button>';
+    return sidebar+main+coachFab;
   }
 
   function render(){
@@ -560,6 +564,7 @@
     const t=closest(e.target,"[data-action]"); if(!t) return;
     const a=t.getAttribute("data-action");
     if(a==="view"){ state.view=t.getAttribute("data-view"); state.modal=null; render(); }
+    else if(a==="coach"){ openCoach(); }
     else if(a==="metric"){ state.modal={type:"metric",key:t.getAttribute("data-key"),win:90}; renderModal(); }
     else if(a==="score"){ state.modal={type:"score",key:t.getAttribute("data-key")}; renderModal(); }
     else if(a==="goal"){ state.modal={type:"goal"}; renderModal(); }
@@ -638,6 +643,43 @@
       .then(r=>r.ok?r.json():null)
       .then(d=>{ if(applyLive(d)) render(); })
       .catch(()=>{ /* offline or no file — keep demo fixtures */ });
+  }
+
+  /* ----------------------- weekly coach check-in ------------------------- */
+  // Build a pre-filled coaching update from whatever the dashboard is showing
+  // (live values after a sync, fixtures otherwise).
+  function coachPrompt(){
+    const mv=(k)=>{ const m=byKey(k); return m?m.value:"—"; };
+    const src=state.live?("live, synced "+syncAgo(state.live.syncedAt)):"demo data";
+    const runs=RUNS.slice(0,5).map(r=>"  - "+r.date+": "+r.type+" — "+r.dist+" km @ "+pace(r.paceSec)+"/km, avg HR "+(r.hr||"—")).join("\n");
+    return [
+"You are my endurance running coach. Below is my weekly training check-in for my goal race.",
+"Please review how my week went against the data, then suggest any adjustments to next week's training. Ask me anything you need.",
+"",
+"HOW MY WEEK FELT (I'll fill this in):",
+"- Overall how training felt (1-10) and why:",
+"- Any niggles, pain or injury concerns:",
+"- Sleep and life stress this week:",
+"- Sessions I completed / missed / moved:",
+"- Anything I want changed next week:",
+"",
+"MY CURRENT DATA (from my PerformanceOS dashboard — "+src+"):",
+"- Goal: "+RACE.name+" ("+RACE.dist+"), "+daysTo+" days out, target sub-"+mmss(RACE.goalSec),
+"- Projected 10k: "+mmss(PROJ.k10)+" (range "+mmss(PROJ.band[0])+"–"+mmss(PROJ.band[1])+")",
+"- VO2 max: "+mv("vo2")+" | HRV: "+mv("hrv")+" ms | Resting HR: "+mv("rhr")+" bpm | Body Battery: "+mv("battery"),
+"- Sleep score: "+mv("sleep")+" | Readiness: "+((SCORES.find(s=>s.key==="readiness")||{}).value||"—")+"/100 | Weekly distance: "+mv("wdist")+" km",
+"- 10k PB: "+mv("pb10")+" | 5k PB: "+mv("pb5"),
+"- Recent runs:",
+runs||"  (none recorded)"
+    ].join("\n");
+  }
+  function openCoach(){
+    const text=coachPrompt();
+    // Copy to clipboard as a fallback so the full update is always pasteable,
+    // regardless of any URL-length limits at the destination.
+    try{ if(navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{}); }catch(e){}
+    const url=COACH_BASE+"?q="+encodeURIComponent(text);
+    window.open(url,"_blank","noopener");
   }
 
   render();
