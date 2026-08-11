@@ -1,0 +1,1262 @@
+{
+  "blockStart": "2026-05-18",
+  "currentWeek": 7,
+  "weeks": [
+    {
+      "phase": "Build",
+      "quality": "Intervals",
+      "days": {
+        "Mon": [
+          {
+            "kind": "easy",
+            "title": "Easy run · 4 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Interval session",
+            "target": "Quality reps",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "mobility",
+            "title": "Recovery & mobility",
+            "target": "Loosen up",
+            "comp": "none"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 6 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "Quality",
+      "days": {
+        "Mon": [
+          {
+            "kind": "easy",
+            "title": "Easy run · 4.5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Quality session",
+            "target": "Controlled effort",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "mobility",
+            "title": "Recovery & mobility",
+            "target": "Loosen up",
+            "comp": "none"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 5 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "Intervals",
+      "days": {
+        "Mon": [
+          {
+            "kind": "easy",
+            "title": "Easy run · 5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Interval session",
+            "target": "Quality reps",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "mobility",
+            "title": "Recovery & mobility",
+            "target": "Loosen up",
+            "comp": "none"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 8 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Recovery",
+      "quality": "Quality",
+      "days": {
+        "Mon": [
+          {
+            "kind": "easy",
+            "title": "Easy run · 4.5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Quality session",
+            "target": "Easy quality",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "mobility",
+            "title": "Recovery & mobility",
+            "target": "Loosen up",
+            "comp": "none"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 6 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "Intervals",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5.5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Interval session",
+            "target": "Quality reps",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "mobility",
+            "title": "Recovery & mobility",
+            "target": "Loosen up",
+            "comp": "none"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 7 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "Intervals",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 45 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Interval session",
+            "target": "Quality reps",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 8 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "6×800 @5:40–5:50",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 45 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          },
+          {
+            "kind": "strides",
+            "title": "4 × 20 sec strides",
+            "target": "Relaxed speed",
+            "comp": "none"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "6 × 800 m",
+            "target": "5:40–5:50/km · 2′ jog",
+            "comp": "pace",
+            "keystone": true
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "mobility",
+            "title": "Mobility & recovery",
+            "target": "Loosen up",
+            "comp": "none"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 9 km",
+            "target": "Last 2 km @ goal pace if good",
+            "comp": "pace"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "Tempo 20′",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 45 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5.5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Tempo · 20 min",
+            "target": "5:55–6:05/km",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 10 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "8×400 @5:15–5:25",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 45–60 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 6 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "8 × 400 m",
+            "target": "5:15–5:25/km",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 11 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Recovery",
+      "quality": "Progression 8k",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 40 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Progression run · 8 km",
+            "target": "Build to goal pace",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs · reduced volume",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 9 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "3×2km @5:45–5:50",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 45–60 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 6 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "3 × 2 km",
+            "target": "5:45–5:50/km",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 12 km",
+            "target": "Final 3 km @ goal pace",
+            "comp": "pace"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Peak",
+      "quality": "5×1km @5:50–5:55",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 60 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 6 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "5 × 1 km",
+            "target": "5:50–5:55/km",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 13 km",
+            "target": "Final 3 km @ goal pace",
+            "comp": "pace"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Build",
+      "quality": "Tempo 25′",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 60 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 6 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "Tempo · 25 min",
+            "target": "Sustained effort",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 12 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Benchmark",
+      "quality": "5k time trial",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 45 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "5 km benchmark TT",
+            "target": "Controlled — calibration",
+            "comp": "pace",
+            "keystone": true
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs · light",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Long run · 10 km",
+            "target": "Middle 5 km @ goal pace",
+            "comp": "pace"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Taper",
+      "quality": "4×400 @5k pace",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 40 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push · reduced",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "4 × 400 m",
+            "target": "5k pace · full recovery",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs · activation only",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Easy long run · 8 km",
+            "target": "Aerobic · easy",
+            "comp": "hr"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Taper",
+      "quality": "Sharpen 6×400 @GP",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 40 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 5 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push · reduced",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "6 × 400 m",
+            "target": "Goal pace · sharp & short",
+            "comp": "pace"
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs · activation only",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Easy long run · 9 km",
+            "target": "Middle 3 km @ goal pace",
+            "comp": "pace"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "rest",
+            "title": "Rest",
+            "target": "Full recovery",
+            "comp": "none"
+          }
+        ]
+      }
+    },
+    {
+      "phase": "Race",
+      "quality": "3×800 → race",
+      "days": {
+        "Mon": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride · 30 min",
+            "target": "HR 135–150",
+            "comp": "hr"
+          },
+          {
+            "kind": "easy",
+            "title": "Easy run · 4 km",
+            "target": "HR 140–155",
+            "comp": "hr"
+          },
+          {
+            "kind": "strides",
+            "title": "4 × 20 sec strides",
+            "target": "Relaxed speed",
+            "comp": "none"
+          }
+        ],
+        "Tue": [
+          {
+            "kind": "push",
+            "title": "Strength · Push · light",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          }
+        ],
+        "Wed": [
+          {
+            "kind": "pull",
+            "title": "Strength · Pull",
+            "target": "Maintain · low soreness",
+            "comp": "load"
+          },
+          {
+            "kind": "quality",
+            "title": "3 × 800 m",
+            "target": "Goal pace 5:58–6:00/km",
+            "comp": "pace",
+            "keystone": true
+          }
+        ],
+        "Thu": [
+          {
+            "kind": "legs",
+            "title": "Strength · Legs · mobility only",
+            "target": "Challenging · avoid deep soreness",
+            "comp": "load"
+          }
+        ],
+        "Fri": [
+          {
+            "kind": "bike",
+            "title": "Zone 2 ride",
+            "target": "HR 135–150",
+            "comp": "hr"
+          }
+        ],
+        "Sat": [
+          {
+            "kind": "long",
+            "title": "Shake-out · 20 min",
+            "target": "+ 4 strides",
+            "comp": "pace"
+          }
+        ],
+        "Sun": [
+          {
+            "kind": "long",
+            "title": "🏃 Bridge to Brisbane · 10 km",
+            "target": "Sub-60 · 5:58–6:00/km",
+            "comp": "pace",
+            "keystone": true
+          }
+        ]
+      }
+    }
+  ]
+}

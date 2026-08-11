@@ -85,7 +85,7 @@
   const INTENSITY = [ {name:"Easy (Z1\u20132)",value:79,color:"var(--cool)"},{name:"Threshold (Z3\u20134)",value:15,color:"var(--warm)"},{name:"VO\u2082 / hard (Z5)",value:6,color:"var(--coral)"} ];
   const INJURY = { flags:[ {label:"Acute:chronic ratio",value:"1.12",tone:"ok",note:"Balanced (0.8\u20131.3)"},{label:"Training monotony",value:"1.4",tone:"ok",note:"Varied enough"},{label:"Easy-day intensity",value:"creep",tone:"warn",note:"Z3 drift on easy runs"} ] };
 
-  const PHASES = [
+  let PHASES = [
     {wk:"W1",date:"18 May",phase:"Build",quality:"Intervals"},{wk:"W2",date:"25 May",phase:"Build",quality:"Quality"},
     {wk:"W3",date:"1 Jun",phase:"Build",quality:"Intervals"},{wk:"W4",date:"8 Jun",phase:"Recovery",quality:"Quality"},
     {wk:"W5",date:"15 Jun",phase:"Build",quality:"Intervals"},{wk:"W6",date:"22 Jun",phase:"Build",quality:"Intervals"},
@@ -96,8 +96,10 @@
     {wk:"W15",date:"24 Aug",phase:"Taper",quality:"4\u00d7400 @5k pace"},{wk:"W16",date:"31 Aug",phase:"Taper",quality:"Sharpen 6\u00d7400 @GP"},
     {wk:"W17",date:"7 Sep",phase:"Race",quality:"3\u00d7800 \u2192 race"}
   ];
-  const CURRENT_WEEK = 7;
-  const BLOCK_START = new Date("2026-05-18T00:00:00");
+  // These three describe the active plan. They default to the built-in demo block
+  // and are replaced by data/<profile>/plan.json when it loads (applyPlan).
+  let CURRENT_WEEK = 7;
+  let BLOCK_START = new Date("2026-05-18T00:00:00");
   const DAYS = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
   const SPORT = {
@@ -151,6 +153,37 @@
   }
   function buildSchedule(){ const s={}; WEEKS.forEach((spec,i)=>{ s[i+1]=buildWeek(spec,i+1); }); return s; }
   const WEEK_RANGE = (n) => shortDate(addDays(BLOCK_START,(n-1)*7)) + " \u2013 " + shortDate(addDays(BLOCK_START,(n-1)*7+6));
+
+  /* ---- Plan loaded from data/<profile>/plan.json (falls back to demo above) ---- */
+  function buildScheduleFromPlan(plan){
+    const s={}; const start=new Date(plan.blockStart+"T00:00:00");
+    plan.weeks.forEach((wk,i)=>{
+      const n=i+1, mon0=addDays(start,(n-1)*7), D={};
+      DAYS.forEach((d,di)=>{
+        const dt=addDays(mon0,di);
+        const sessions=(wk.days&&wk.days[d]?wk.days[d]:[]).map((x,idx)=>({
+          id:"w"+n+"-"+d+"-"+idx, kind:x.kind, title:x.title, target:x.target,
+          comp:x.comp||"none", status:statusFor(dt,x.kind), keystone:!!x.keystone
+        }));
+        D[d]={date:shortDate(dt), sessions:sessions};
+      });
+      s[n]=D;
+    });
+    return s;
+  }
+  function phasesFromPlan(plan){
+    const start=new Date(plan.blockStart+"T00:00:00");
+    return plan.weeks.map((w,i)=>({wk:"W"+(i+1), date:shortDate(addDays(start,i*7)), phase:w.phase, quality:w.quality}));
+  }
+  function applyPlan(plan){
+    if(!plan || !Array.isArray(plan.weeks) || !plan.weeks.length) return false;
+    BLOCK_START=new Date(plan.blockStart+"T00:00:00");
+    CURRENT_WEEK=Math.min(Math.max(1, plan.currentWeek||1), plan.weeks.length);
+    PHASES=phasesFromPlan(plan);
+    state.schedule=buildScheduleFromPlan(plan);
+    state.week=Math.min(Math.max(1, state.week), plan.weeks.length);
+    return true;
+  }
   function guardrails(week){ const out=[]; for(let i=0;i<DAYS.length-1;i++){ const a=week[DAYS[i]].sessions.some((s)=>HARD.indexOf(s.kind)>=0); const b=week[DAYS[i+1]].sessions.some((s)=>HARD.indexOf(s.kind)>=0); if(a&&b) out.push(DAYS[i]+" and "+DAYS[i+1]+" are back-to-back hard days — 48h between hard efforts is the target."); } return out; }
 
   const PUSH_SETS = [
@@ -654,6 +687,11 @@
         if(p && p.name){ state.profileName=p.name; render(); }
       })
       .catch(()=>{});
+    // This profile's training plan (falls back to the built-in demo block).
+    fetch("data/"+state.profile+"/plan.json?t="+Date.now(),{cache:"no-store"})
+      .then(r=>r.ok?r.json():null)
+      .then(p=>{ if(applyPlan(p)) render(); })
+      .catch(()=>{ /* no plan file — keep demo block */ });
     // This profile's live Garmin data.
     fetch("data/"+state.profile+"/garmin.json?t="+Date.now(),{cache:"no-store"})
       .then(r=>r.ok?r.json():null)

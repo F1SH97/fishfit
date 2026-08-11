@@ -1,0 +1,20 @@
+{
+  "_note": "PLACEHOLDER prenatal plan — gentle, conservative, no intervals/PB work. Replaced with a proper provider-cleared prenatal plan in the prenatal-dashboard step. Not medical advice.",
+  "blockStart": "2026-08-10",
+  "currentWeek": 1,
+  "weeks": [
+    {
+      "phase": "Base",
+      "quality": "Easy movement",
+      "days": {
+        "Mon": [ { "kind": "easy", "title": "Easy walk/jog · by feel", "target": "Conversational (talk-test)", "comp": "none" } ],
+        "Tue": [ { "kind": "mobility", "title": "Mobility & pelvic floor", "target": "Gentle", "comp": "none" } ],
+        "Wed": [ { "kind": "easy", "title": "Easy walk/jog · by feel", "target": "Conversational (talk-test)", "comp": "none" } ],
+        "Thu": [ { "kind": "rest", "title": "Rest", "target": "Recovery", "comp": "none" } ],
+        "Fri": [ { "kind": "easy", "title": "Easy walk/jog · by feel", "target": "Conversational (talk-test)", "comp": "none" } ],
+        "Sat": [ { "kind": "mobility", "title": "Mobility & stretch", "target": "Gentle", "comp": "none" } ],
+        "Sun": [ { "kind": "rest", "title": "Rest", "target": "Full recovery", "comp": "none" } ]
+      }
+    }
+  ]
+}
