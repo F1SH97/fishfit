@@ -1,0 +1,52 @@
+name: Apply coach patch
+
+# Deterministic, human-in-the-loop half of the coach loop.
+# Paste the coach's structured plan-update JSON block; this validates it,
+# applies it to ONLY that profile's data/<profile>/plan.json, and opens a PR
+# for you to review and merge. Nothing goes live without your merge tap.
+
+on:
+  workflow_dispatch:
+    inputs:
+      patch:
+        description: "Paste the coach's plan-update JSON (a { profile, week, changes[] } object)"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate & apply patch (path-scoped to one profile)
+        env:
+          PATCH: ${{ inputs.patch }}
+        run: python scripts/apply_plan_patch.py
+
+      - name: Open a pull request with the change
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! git status --porcelain data/ | grep -q .; then
+            echo "::notice::Patch produced no change — no PR opened."
+            exit 0
+          fi
+          branch="coach/plan-update-$(date +%s)"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "coach: apply plan update"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Coach plan update" \
+            --body "Automated plan update from a weekly check-in. The diff is scoped to a single profile's \`plan.json\`. Review and merge to apply; the dashboard updates on merge."

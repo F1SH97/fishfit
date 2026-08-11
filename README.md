@@ -15,7 +15,11 @@ data** through a scheduled sync.
 | `data/<profile>/plan.json` | The profile's training plan (weeks → days → sessions). Coach-editable. |
 | `scripts/fetch_garmin.py` | Headless fetch of Garmin metrics → `data/<PROFILE>/garmin.json`. |
 | `scripts/garmin_auth.py` | One-time local login to mint a CI token. |
+| `scripts/apply_plan_patch.py` | Validates a coach plan-patch and applies it, path-scoped, to one profile's `plan.json`. |
+| `scripts/test_isolation.py` | Isolation + validation tests for the patch applier (runs in CI). |
 | `.github/workflows/garmin-sync.yml` | Scheduled job that runs the fetch and commits the data. |
+| `.github/workflows/apply-coach-patch.yml` | Manual: paste a coach patch → applies it → opens a PR to review. |
+| `.github/workflows/tests.yml` | Runs the isolation tests on changes to `scripts/` or `data/`. |
 
 Each person is a **profile** with its own `data/<profile>/` folder. The dashboard
 picks a profile from the URL — `?u=cjf` (default) or `?u=jj` — and reads only that

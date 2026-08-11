@@ -1,0 +1,22 @@
+name: Tests
+
+# Guards the coach-loop safety properties: the plan-patch applier's isolation
+# and validation rules must hold on every change to the scripts or data.
+
+on:
+  push:
+    branches: [main]
+    paths: ["scripts/**", "data/**", ".github/workflows/tests.yml"]
+  pull_request:
+    paths: ["scripts/**", "data/**", ".github/workflows/tests.yml"]
+
+jobs:
+  isolation:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Plan-patch isolation & validation tests
+        run: python scripts/test_isolation.py
