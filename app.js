@@ -212,6 +212,8 @@
     live:null,             // set to {syncedAt, source} once live Garmin data is applied
     profile:PROFILE,       // active profile id
     profileName:PROFILE,   // display name, filled from data/profiles.json
+    dashboard:"performance", // "performance" | "prenatal" — from profile.json
+    pregnancy:null,        // prenatal state from profile.json (status, trimester, clearedByProvider)
     week:CURRENT_WEEK,
     schedule:buildSchedule(),
     oneRM:{ bench:{v:82,src:"est",date:"2 Jul"}, squat:{v:110,src:"est",date:"28 Jun"}, deadlift:{v:140,src:"est",date:"25 Jun"} }
@@ -421,6 +423,9 @@
       +(s.status==="moved"?'<div style="font-size:10.5px;color:var(--bike);margin-top:3px">moved from '+s.movedFrom+'</div>':'')
       +'</div></div>'+sel+'</div>';
   }
+  function weekBoard(week){
+    return '<div class="board">'+DAYS.map(d=>'<div class="col"><div class="colhead"><span style="font-weight:700;font-size:12px;color:var(--text)">'+d+'</span><span style="font-size:10px;color:var(--muted)">'+week[d].date+'</span></div>'+(week[d].sessions.length?week[d].sessions.map(s=>sessionCard(s,d)).join(""):'<div class="empty">open</div>')+'</div>').join("")+'</div>';
+  }
   function coachingView(){
     const week=state.schedule[state.week], phase=PHASES[state.week-1], warns=guardrails(week);
     const today='<div class="pcard" style="padding:20px;border-left:3px solid var(--cool)"><span style="display:inline-flex;align-items:center;gap:8px;color:var(--cool);font-size:12px;font-weight:600">'+ic("sunrise",15)+' TODAY \u00b7 FRIDAY \u00b7 WEEK 7</span>'
@@ -433,7 +438,7 @@
       +'<button class="iconbtn" data-action="week-next"'+(state.week>=17?' disabled':'')+'>'+ic("chevron-right",16)+'</button></div>'
       +'<span class="chip">'+ic("info",12)+' Matches by session, not day</span></div>'
       +warns.map(w=>'<div class="warn">'+ic("alert-triangle",14)+' '+w+'</div>').join("")
-      +'<div class="board">'+DAYS.map(d=>'<div class="col"><div class="colhead"><span style="font-weight:700;font-size:12px;color:var(--text)">'+d+'</span><span style="font-size:10px;color:var(--muted)">'+week[d].date+'</span></div>'+(week[d].sessions.length?week[d].sessions.map(s=>sessionCard(s,d)).join(""):'<div class="empty">open</div>')+'</div>').join("")+'</div></div>';
+      +weekBoard(week)+'</div>';
     const exec='<div class="pcard" style="padding:18px">'+cardHead("target","Execution score","How well you\'re running the plan")+'<div style="display:flex;align-items:center;gap:20px;margin-top:12px">'+ringSVG(EXECUTION.score)+'<div style="flex:1">'
       +EXECUTION.parts.map(p=>'<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px"><span style="color:var(--dim)">'+p[0]+'</span><span style="color:var(--text);font-weight:600">'+p[1]+'</span></div><div style="height:4px;background:var(--track);border-radius:4px"><div style="width:'+p[1]+'%;height:100%;background:'+(p[1]<82?"var(--warn)":"var(--cool)")+';border-radius:4px"></div></div></div>').join("")
       +'</div></div></div>';
@@ -456,6 +461,65 @@
     const review='<div class="pcard" style="padding:20px">'+cardHead("brain","Monday Review","Runs automatically every Monday 6am — here\'s last week\'s",'<span class="chip">'+ic("radio",12)+' Auto-generated</span>')+grid+'</div>';
     const more='<div class="pcard" style="padding:18px;border-style:dashed">'+cardHead("file-text","More reports — next build","Weekly, block-end and race-readiness summaries")+'<p style="font-size:12.5px;color:var(--dim);line-height:1.5;margin-top:12px;margin-bottom:0">Exportable weekly and block reviews, a pre-race readiness report in race week, and a post-race analysis that grades execution against your pacing plan.</p></div>';
     return '<div class="stack">'+review+more+'</div>';
+  }
+
+  /* --------------------------- prenatal dashboard ------------------------ */
+  // Warning signs to STOP exercising and seek care (aligned with ACOG guidance).
+  const PRENATAL_WARNING_SIGNS = [
+    "Vaginal bleeding","Regular painful contractions","Fluid leaking from the vagina",
+    "Chest pain","Shortness of breath before exertion","Dizziness or feeling faint",
+    "Headache","Calf pain or swelling","Muscle weakness affecting balance","Decreased fetal movement"
+  ];
+  function prenatalDisclaimer(){
+    return '<div class="pcard" style="padding:16px;border-color:rgba(242,184,92,0.4);background:linear-gradient(90deg,rgba(242,184,92,0.10),rgba(242,184,92,0.02))">'
+      +'<div style="display:flex;gap:10px;align-items:flex-start">'+ic("shield-alert",18)
+      +'<div><div style="font-weight:700;font-size:13px;color:var(--warn)">Not medical advice</div>'
+      +'<p style="margin:5px 0 0;font-size:12.5px;color:var(--dim);line-height:1.55">This dashboard supports — it does not replace — your doctor, OB/GYN or midwife. In pregnancy: get <b style="color:var(--text)">provider clearance before exercising</b>, go by <b style="color:var(--text)">how you feel</b> (talk-test / effort, never pace or PBs), and <b style="color:var(--text)">stop and seek care</b> if any warning sign below appears.</p></div></div></div>';
+  }
+  function prenatalStatusCard(){
+    const p=state.pregnancy||{};
+    const cleared=p.clearedByProvider===true;
+    const suspected=p.status==="suspected";
+    const tone=cleared?"var(--good)":"var(--warn)";
+    const bg=cleared?"rgba(100,224,163,0.10)":"rgba(242,184,92,0.10)";
+    const stage=p.trimester?("Trimester "+p.trimester):(p.status?p.status:"stage to confirm");
+    let msg;
+    if(suspected) msg="Pregnancy suspected. Confirm with a test and your provider before starting or changing training. Until then keep movement gentle and optional.";
+    else if(!cleared) msg="Not yet cleared by a provider. The plan stays gentle and will not progress until you confirm clearance with your OB/GYN or midwife.";
+    else msg="Provider-cleared. The plan can adapt with your stage — always defer to how you feel and your provider.";
+    return '<div class="pcard" style="padding:18px;border-left:3px solid '+tone+';background:'+bg+'">'
+      +cardHead(cleared?"check-circle-2":"clock", "Provider clearance", "Status: "+esc(stage))
+      +'<p style="margin:10px 0 0;font-size:13px;color:var(--dim);line-height:1.55">'+msg+'</p></div>';
+  }
+  function prenatalWarningCard(){
+    return '<div class="pcard" style="padding:18px;border-color:rgba(242,104,94,0.35)">'
+      +cardHead("alert-triangle","Stop &amp; seek care if you notice","Escalate to your provider — never to this app")
+      +'<div class="gridM" style="margin-top:12px">'+PRENATAL_WARNING_SIGNS.map(w=>'<div style="display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--dim)"><span style="color:var(--bad);flex-shrink:0">'+ic("circle-alert",13)+'</span>'+w+'</div>').join("")+'</div></div>';
+  }
+  function prenatalWeekNav(){
+    const total=Object.keys(state.schedule).length;
+    return '<div class="pcard" style="padding:16px"><div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px"><div style="display:flex;align-items:center;gap:12px">'
+      +'<button class="iconbtn" data-action="week-prev"'+(state.week<=1?' disabled':'')+'>'+ic("chevron-left",16)+'</button>'
+      +'<div><span style="display:inline-flex;align-items:center;gap:8px;color:var(--text);font-weight:600;font-size:14px">'+ic("calendar",16)+' Week '+state.week+'</span><div style="font-size:11.5px;color:var(--muted);margin-top:3px">'+WEEK_RANGE(state.week)+' · move any session — go by feel</div></div>'
+      +'<button class="iconbtn" data-action="week-next"'+(state.week>=total?' disabled':'')+'>'+ic("chevron-right",16)+'</button></div>'
+      +'<span class="chip">'+ic("heart-handshake",12)+' Effort by talk-test, not pace</span></div>'
+      +weekBoard(state.schedule[state.week])+'</div>';
+  }
+  function prenatalDashboard(){
+    return '<div class="stack">'+prenatalDisclaimer()+prenatalStatusCard()
+      +section("Recovery &amp; readiness","What matters most right now — rest, HRV and sleep",metricGrid(["hrv","sleep","rhr","battery"]))
+      +prenatalWarningCard()
+      +section("This week","Gentle movement, adjusted to how you feel",prenatalWeekNav())+'</div>';
+  }
+  function prenatalRecoveryView(){
+    return '<div class="stack">'+prenatalDisclaimer()
+      +section("Recovery metrics","HRV, sleep, resting HR and Body Battery — your readiness signals",metricGrid(["hrv","sleep","rhr","battery","weight"]))
+      +'<div class="pcard" style="padding:18px">'+cardHead("heart-handshake","Reading these in pregnancy","Guidance, not diagnosis")
+      +'<p style="margin:10px 0 0;font-size:13px;color:var(--dim);line-height:1.55">Resting HR naturally rises and HRV often drifts down through pregnancy — trends matter more than absolute numbers, and they are not a reason to push. Prioritise sleep and rest, keep sessions conversational, and take extra recovery whenever you need it. Share anything that concerns you with your provider.</p></div></div>';
+  }
+  function prenatalPlanView(){
+    return '<div class="stack">'+prenatalDisclaimer()
+      +section("Your plan","Gentle by design — nothing progresses without provider clearance",prenatalWeekNav())+'</div>';
   }
 
   /* ------------------------------- modals -------------------------------- */
@@ -545,10 +609,22 @@
   }
 
   /* ------------------------------- shell --------------------------------- */
-  const NAV = [["Dashboard","layout-dashboard"],["Performance","trending-up"],["Recovery","heart-handshake"],["Running","route"],["Strength","dumbbell"],["Coaching","compass"],["Goals","flag"],["Reports","file-text"]];
-  const SUBTITLE = {Dashboard:"Am I improving, recovering, and on track?",Performance:"Fitness, thresholds and records over time.",Recovery:"HRV, sleep and readiness — are you absorbing the work?",Running:"Pace, threshold, and your road to sub-60.",Strength:"Push / Pull / Legs, captured from Garmin.",Coaching:"Today's call, the week's plan, and why.",Goals:"What you're training for.",Reports:"Automated reviews and summaries."};
+  const NAV_PERF = [["Dashboard","layout-dashboard"],["Performance","trending-up"],["Recovery","heart-handshake"],["Running","route"],["Strength","dumbbell"],["Coaching","compass"],["Goals","flag"],["Reports","file-text"]];
+  const NAV_PRENATAL = [["Dashboard","heart-handshake"],["Recovery","activity"],["Plan","calendar"]];
+  const SUBTITLE = {Dashboard:"Am I improving, recovering, and on track?",Performance:"Fitness, thresholds and records over time.",Recovery:"HRV, sleep and readiness — are you absorbing the work?",Running:"Pace, threshold, and your road to sub-60.",Strength:"Push / Pull / Legs, captured from Garmin.",Coaching:"Today's call, the week's plan, and why.",Goals:"What you're training for.",Reports:"Automated reviews and summaries.",Plan:"Gentle movement, adjusted to how you feel."};
+  const SUBTITLE_PRENATAL = {Dashboard:"Move safely — cleared, recovered, and by feel.",Recovery:"Rest, HRV and sleep — your readiness signals.",Plan:"Gentle movement, adjusted to how you feel."};
+  const navItems = () => state.dashboard==="prenatal" ? NAV_PRENATAL : NAV_PERF;
+  const subtitleFor = (v) => (state.dashboard==="prenatal" ? SUBTITLE_PRENATAL[v] : SUBTITLE[v]) || "";
 
   function viewHTML(){
+    if(state.dashboard==="prenatal"){
+      switch(state.view){
+        case "Dashboard": return prenatalDashboard();
+        case "Recovery": return prenatalRecoveryView();
+        case "Plan": return prenatalPlanView();
+        default: return prenatalDashboard();
+      }
+    }
     switch(state.view){
       case "Dashboard": return dashboardView();
       case "Performance": return performanceView();
@@ -563,7 +639,7 @@
   }
   function shell(){
     const sidebar='<aside class="sidebar"><div class="sidebar-brand" style="display:flex;align-items:center;gap:10px;padding:4px 6px 22px"><div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--warm),var(--coral));display:grid;place-items:center;color:#0E1420">'+ic("sunrise",17)+'</div><div><div style="font-weight:700;font-size:14.5px;color:var(--text);letter-spacing:-0.2px">PerformanceOS</div><div style="font-size:10px;color:var(--muted)">'+esc(state.profileName)+' \u00b7 Garmin-first</div></div></div>'
-      +'<nav class="navwrap">'+NAV.map(n=>'<button class="nav'+(state.view===n[0]?' navOn':'')+'" data-action="view" data-view="'+n[0]+'">'+ic(n[1],17)+' '+n[0]+'</button>').join("")+'</nav>'
+      +'<nav class="navwrap">'+navItems().map(n=>'<button class="nav'+(state.view===n[0]?' navOn':'')+'" data-action="view" data-view="'+n[0]+'">'+ic(n[1],17)+' '+n[0]+'</button>').join("")+'</nav>'
       +'<div class="sidebar-foot" style="margin-top:auto;padding-top:16px"><div class="pcard" style="padding:12px;background:var(--panel2)"><div style="display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--dim);font-weight:600">'+ic("radio",13)+' Data source</div><div style="font-size:11px;color:var(--muted);margin:6px 0 9px;line-height:1.4">Fixtures modeled on Garmin MCP tool outputs.</div><button class="connectbtn">'+ic("zap",12)+' Connect Garmin MCP</button></div></div></aside>';
     const syncChip=state.live
       ? '<span class="chip" style="border-color:rgba(100,224,163,0.4);color:var(--good)">'+ic("radio",13)+' Live '+syncAgo(state.live.syncedAt)+'</span>'
@@ -571,8 +647,8 @@
     const banner=state.live
       ? '<div class="banner" style="border-color:rgba(100,224,163,0.28);background:linear-gradient(90deg,rgba(100,224,163,0.10),rgba(100,224,163,0.02))"><span style="display:inline-flex;align-items:center;gap:8px;color:var(--good)">'+ic("check-circle-2",14)+' Live data from '+esc(state.live.source||"Garmin Connect")+' — last synced '+syncAgo(state.live.syncedAt)+'.</span></div>'
       : '<div class="banner"><span style="display:inline-flex;align-items:center;gap:8px">'+ic("shield-alert",14)+' Demo data shaped like real Garmin outputs. Add a GARMINTOKENS secret to sync live; the UI won\'t change.</span></div>';
-    const main='<main class="main"><header class="topbar"><div><h1 style="margin:0;font-size:19px;font-weight:600;color:var(--text)">'+state.view+'</h1><span style="font-size:12px;color:var(--muted)">'+SUBTITLE[state.view]+'</span></div>'
-      +'<div style="display:flex;align-items:center;gap:10px"><span class="chip">'+ic("calendar",13)+' '+daysTo+' days to '+RACE.name+'</span>'+syncChip+'</div></header>'
+    const main='<main class="main"><header class="topbar"><div><h1 style="margin:0;font-size:19px;font-weight:600;color:var(--text)">'+state.view+'</h1><span style="font-size:12px;color:var(--muted)">'+subtitleFor(state.view)+'</span></div>'
+      +'<div style="display:flex;align-items:center;gap:10px">'+(state.dashboard==="prenatal"?'<span class="chip">'+ic("heart-handshake",13)+' By feel, not pace</span>':'<span class="chip">'+ic("calendar",13)+' '+daysTo+' days to '+RACE.name+'</span>')+syncChip+'</div></header>'
       +banner
       +'<div class="content fade">'+viewHTML()+'</div></main>';
     const coachFab='<button class="coachfab" data-action="coach" title="Send your coach a weekly check-in (opens Claude, pre-filled with this week\'s data)">'+ic("message-circle",18)+'<span>Weekly check-in</span></button>';
@@ -687,6 +763,18 @@
         if(p && p.name){ state.profileName=p.name; render(); }
       })
       .catch(()=>{});
+    // This profile's settings (dashboard type + persona state).
+    fetch("data/"+state.profile+"/profile.json?t="+Date.now(),{cache:"no-store"})
+      .then(r=>r.ok?r.json():null)
+      .then(pr=>{
+        if(!pr) return;
+        if(pr.dashboard){ state.dashboard=pr.dashboard; }
+        if(pr.pregnancy){ state.pregnancy=pr.pregnancy; }
+        // Land on a valid default view for this dashboard type.
+        if(state.dashboard==="prenatal" && ["Performance","Running","Strength","Goals","Reports"].indexOf(state.view)>=0){ state.view="Dashboard"; }
+        render();
+      })
+      .catch(()=>{});
     // This profile's training plan (falls back to the built-in demo block).
     fetch("data/"+state.profile+"/plan.json?t="+Date.now(),{cache:"no-store"})
       .then(r=>r.ok?r.json():null)
@@ -705,6 +793,7 @@
   function coachPrompt(){
     const mv=(k)=>{ const m=byKey(k); return m?m.value:"—"; };
     const src=state.live?("live, synced "+syncAgo(state.live.syncedAt)):"demo data";
+    if(state.dashboard==="prenatal") return prenatalCoachPrompt(mv, src);
     const runs=RUNS.slice(0,5).map(r=>"  - "+r.date+": "+r.type+" — "+r.dist+" km @ "+pace(r.paceSec)+"/km, avg HR "+(r.hr||"—")).join("\n");
     return [
 "You are my endurance running coach. Below is my weekly training check-in for my goal race.",
@@ -727,6 +816,31 @@
 "- 10k PB: "+mv("pb10")+" | 5k PB: "+mv("pb5"),
 "- Recent runs:",
 runs||"  (none recorded)"
+    ].join("\n");
+  }
+  function prenatalCoachPrompt(mv, src){
+    const p=state.pregnancy||{};
+    const stage=p.trimester?("trimester "+p.trimester):(p.status||"stage to confirm");
+    const cleared=p.clearedByProvider===true ? "yes" : "not yet";
+    return [
+"You are my prenatal fitness coach. This is my weekly check-in. You are NOT a medical professional and must not give medical advice — keep guidance gentle and conservative, base effort on the talk-test / how I feel (never pace or PBs), and tell me to confirm anything with my OB/GYN or midwife. If I mention any warning sign (bleeding, contractions, fluid leak, chest pain, breathlessness, dizziness, headache, calf pain/swelling, reduced fetal movement), tell me to stop and contact my provider or emergency care immediately.",
+"Review my week, then suggest only gentle, stage-appropriate adjustments to next week — and do not progress load unless I confirm I'm cleared by my provider.",
+"",
+"[profile: "+state.profile+"]   (any plan changes apply ONLY to this profile)",
+"",
+"MY PREGNANCY: stage = "+stage+" | provider-cleared to exercise = "+cleared,
+"",
+"HOW MY WEEK FELT (I'll fill this in):",
+"- Overall energy and how movement felt (1-10):",
+"- Any symptoms or warning signs (bleeding, cramping, dizziness, pain, etc.):",
+"- Sleep, nausea and life stress this week:",
+"- Sessions I did / skipped (and why):",
+"- Anything I want to change or ask:",
+"",
+"MY CURRENT DATA (from my dashboard — "+src+"):",
+"- HRV: "+mv("hrv")+" ms | Resting HR: "+mv("rhr")+" bpm | Sleep score: "+mv("sleep")+" | Body Battery: "+mv("battery"),
+"- Readiness: "+((SCORES.find(s=>s.key==="readiness")||{}).value||"—")+"/100",
+"- This week is a gentle '"+((PHASES[state.week-1]||{}).phase||"base")+"' week; I move by feel."
     ].join("\n");
   }
   function openCoach(){
