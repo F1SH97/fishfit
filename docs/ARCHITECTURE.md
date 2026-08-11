@@ -147,23 +147,36 @@ The PR diff makes any scope violation visible before merge.
 
 ## 5. The coach loop — two build layers
 
-- **6a Deterministic apply pipeline** (buildable now, no AI credentials):
-  a GitHub Action takes a structured `plan-patch`, validates it against a schema,
-  applies it path-scoped, and opens a PR. This is the safe backbone.
+- **6a Deterministic apply pipeline** ✅ **built**: `scripts/apply_plan_patch.py`
+  validates a `plan-patch` and applies it **path-scoped** to one profile's
+  `plan.json`; the `Apply coach patch` workflow (`workflow_dispatch`) runs it and
+  opens a PR for your merge tap. Guarded by `scripts/test_isolation.py` in CI.
 - **6b Autonomous coach** (needs a decision): the "hands" that produce the patch
   unattended. Options, most→least reliable for GitHub write:
   - **Claude Code headless in a GitHub Action** — real git access; needs Claude
-    credentials as a secret (API key or Claude Code OAuth token).
+    credentials as a secret (API key or Claude Code OAuth token). *(penciled in.)*
   - **Cowork scheduled Routine** — account-based agent against the repo.
   - **claude.ai Project + GitHub connector** — write scope **unconfirmed**; not
     relied upon.
 
-Structured `plan-patch` contract (shape TBD in step 4/6a), e.g.:
+Structured `plan-patch` contract (enforced by `apply_plan_patch.py`):
 ```json
-{ "profile": "cjf", "week": 8,
-  "changes": [ { "day": "Wed", "session": "Tempo 25′ → easy 40′", "why": "calf niggle" } ],
-  "coachNote": "…human-readable feedback…" }
+{
+  "profile": "cjf",
+  "week": 8,
+  "coachNote": "human-readable feedback",
+  "changes": [
+    { "day": "Wed", "op": "replace", "index": 1,
+      "session": {"kind":"easy","title":"Easy 40'","target":"Conversational","comp":"none"} },
+    { "day": "Sat", "op": "add",
+      "session": {"kind":"mobility","title":"Mobility 20'","target":"Gentle","comp":"none"} },
+    { "day": "Tue", "op": "remove", "index": 0 }
+  ]
+}
 ```
+`op` ∈ `replace` | `add` | `remove`. The applier rejects unknown profiles,
+path-escaping ids, out-of-range weeks/indices, invalid days and malformed
+sessions — writing nothing on any failure.
 
 ---
 
@@ -186,19 +199,20 @@ Structured `plan-patch` contract (shape TBD in step 4/6a), e.g.:
 ## 7. Build order (this phase)
 
 1. ✅ **This doc.**
-2. **Profile foundation + routing + migrate existing data** — `profiles.json`,
-   `data/cjf/` + `data/jj/`, URL profile select (`?u=`), move current
-   `data/garmin.json` → `data/cjf/garmin.json`.
-3. **Profile-aware Garmin sync** — workflow loops profiles, per-profile token
+2. ✅ **Profile foundation + routing + migrate existing data** — `profiles.json`,
+   `data/cjf/` + `data/jj/`, URL profile select (`?u=`), `data/garmin.json` →
+   `data/cjf/garmin.json`.
+3. ✅ **Profile-aware Garmin sync** — workflow loops profiles, per-profile token
    secret, own folder; daily job stays alive.
-4. **Plan-as-data refactor** — `data/<profile>/plan.json`, dashboard renders the
-   plan from it (fixture fallback). Prove on `cjf` first, then clone to `jj`.
-5. **JJ prenatal dashboard + persona + guardrails** — drop PB/pace/predictor,
-   add disclaimer + provider-clearance gate; write the prenatal persona.
-6. **Coach loop** — 6a deterministic patch→PR pipeline; 6b wire the autonomous
-   runner (pending runner decision + secret).
-7. **End-to-end + isolation test** — both dashboards, both sync paths, cross-over
-   test, URLs.
+4. ✅ **Plan-as-data refactor** — `data/<profile>/plan.json`, dashboard renders the
+   plan from it (fixture fallback); verified byte-identical across 17 weeks.
+5. ✅ **JJ prenatal dashboard + persona + guardrails** — dropped PB/pace/predictor,
+   added disclaimer + provider-clearance gate + warning signs; prenatal coach prompt.
+6. **Coach loop** — 6a ✅ deterministic patch→PR pipeline (`apply_plan_patch.py`
+   + `Apply coach patch` workflow); **6b** wire the autonomous runner (pending
+   runner decision + secret).
+7. ✅ **Isolation test** — `test_isolation.py` proves cross-over isolation +
+   validation; runs in CI (`tests.yml`).
 
 Each step is verified continuously (desktop + mobile), not only at step 7.
 
