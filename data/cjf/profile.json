@@ -1,0 +1,7 @@
+{
+  "id": "cjf",
+  "name": "Callum",
+  "persona": "endurance-performance",
+  "dashboard": "performance",
+  "race": { "name": "Bridge to Brisbane", "dist": "10 km", "date": "2026-09-13T07:00:00", "goalSec": 3600 }
+}
