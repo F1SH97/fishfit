@@ -9,10 +9,12 @@ current.
 
 ## 1. What this is
 
-A personal endurance dashboard (static HTML/CSS/JS, no build step) that:
-- pulls **live Garmin data** on a schedule and renders it, and
-- lets each user run a weekly **coach check-in** whose advice can adjust their
-  training plan and flow back into the dashboard as a reviewed pull request.
+A **Garmin dashboard** that renders your data into easy-to-read displays with
+**integrated coaching plans** built in. The plans are live: each user follows the
+training plan their coach has set out, with the ability to provide **weekly
+updates through a check-in**. From that check-in, the coach amends any future
+training sessions to match how the user is feeling and the feedback they
+provided — if a change is applicable.
 
 It runs entirely on **GitHub Pages + GitHub Actions** — no server, no database.
 
