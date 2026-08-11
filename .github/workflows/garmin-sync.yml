@@ -1,11 +1,13 @@
 name: Garmin data sync
 
-# Fetches live Garmin Connect metrics and commits data/garmin.json, which the
-# dashboard reads at runtime. Auth is token-only: set a GARMINTOKENS secret
-# (see scripts/garmin_auth.py). No Garmin email or password is ever stored in
-# or referenced by GitHub. Until the secret is configured, the job checks out
-# and exits cleanly — nothing fetched or committed — so the site keeps serving
-# its built-in fixtures.
+# Fetches live Garmin Connect metrics per profile and commits data/<profile>/garmin.json,
+# which the dashboard reads at runtime. Auth is token-only, one token secret per
+# profile (see scripts/garmin_auth.py). No Garmin email or password is ever stored
+# in or referenced by GitHub. A profile with no token is skipped cleanly, so the
+# site keeps serving that profile's fixtures.
+#
+# To add a profile: add its token secret below (GARMINTOKENS_<ID>) and its id to
+# the PROFILES list. cjf reuses the original GARMINTOKENS secret.
 
 on:
   schedule:
@@ -20,6 +22,9 @@ concurrency:
 permissions:
   contents: write
 
+env:
+  PROFILES: "cjf jj"
+
 jobs:
   sync:
     runs-on: ubuntu-latest
@@ -27,16 +32,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Check for credentials
+      - name: Check for any credentials
         id: creds
         env:
-          GARMINTOKENS: ${{ secrets.GARMINTOKENS }}
+          GARMINTOKENS_CJF: ${{ secrets.GARMINTOKENS }}
+          GARMINTOKENS_JJ: ${{ secrets.GARMINTOKENS_JJ }}
         run: |
-          if [ -n "$GARMINTOKENS" ]; then
+          if [ -n "$GARMINTOKENS_CJF" ] || [ -n "$GARMINTOKENS_JJ" ]; then
             echo "has=true" >> "$GITHUB_OUTPUT"
           else
             echo "has=false" >> "$GITHUB_OUTPUT"
-            echo "::notice::No GARMINTOKENS secret configured — skipping sync. Add it to enable live data."
+            echo "::notice::No Garmin token secrets configured — skipping sync. Add GARMINTOKENS (cjf) / GARMINTOKENS_JJ (jj) to enable live data."
           fi
 
       - name: Set up Python
@@ -49,14 +55,24 @@ jobs:
         if: steps.creds.outputs.has == 'true'
         run: pip install -r scripts/requirements.txt
 
-      - name: Fetch Garmin data
+      - name: Sync each profile that has a token
         if: steps.creds.outputs.has == 'true'
         env:
-          # Token-only: the workflow never references a Garmin email or password.
-          # Step 3 generalises this to a per-profile loop; today it syncs cjf.
-          PROFILE: cjf
-          GARMINTOKENS: ${{ secrets.GARMINTOKENS }}
-        run: python scripts/fetch_garmin.py
+          # One token secret per profile. cjf keeps the original GARMINTOKENS secret.
+          GARMINTOKENS_CJF: ${{ secrets.GARMINTOKENS }}
+          GARMINTOKENS_JJ: ${{ secrets.GARMINTOKENS_JJ }}
+        run: |
+          for prof in $PROFILES; do
+            var="GARMINTOKENS_$(echo "$prof" | tr '[:lower:]' '[:upper:]')"
+            token="${!var}"
+            if [ -z "$token" ]; then
+              echo "::notice::No token for '$prof' — skipping."
+              continue
+            fi
+            echo "Syncing profile '$prof'…"
+            PROFILE="$prof" GARMINTOKENS="$token" python scripts/fetch_garmin.py \
+              || echo "::warning::sync failed for '$prof' (leaving its existing data untouched)."
+          done
 
       - name: Commit updated data
         if: steps.creds.outputs.has == 'true'
