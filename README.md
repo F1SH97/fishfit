@@ -12,6 +12,7 @@ data** through a scheduled sync.
 | `data/profiles.json` | Profile registry: who exists, display name, coach persona. |
 | `data/<profile>/garmin.json` | Live Garmin data per profile (`cjf`, `jj`). `live:false` = demo fixtures. |
 | `data/<profile>/profile.json` | Per-profile goals / persona state. |
+| `data/<profile>/plan.json` | The profile's training plan (weeks → days → sessions). Coach-editable. |
 | `scripts/fetch_garmin.py` | Headless fetch of Garmin metrics → `data/<PROFILE>/garmin.json`. |
 | `scripts/garmin_auth.py` | One-time local login to mint a CI token. |
 | `.github/workflows/garmin-sync.yml` | Scheduled job that runs the fetch and commits the data. |
