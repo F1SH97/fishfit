@@ -1,0 +1,7 @@
+{
+  "default": "cjf",
+  "profiles": {
+    "cjf": { "name": "Callum", "persona": "endurance-performance", "dashboard": "performance" },
+    "jj":  { "name": "JJ",     "persona": "prenatal",              "dashboard": "prenatal" }
+  }
+}

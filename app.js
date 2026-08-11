@@ -168,10 +168,17 @@
   ];
 
   /* ------------------------------- state --------------------------------- */
+  // Which profile is being viewed. From ?u=<id>, sanitised to a safe slug so it
+  // can never escape the data/<profile>/ folder. Defaults to "cjf".
+  const PROFILE = ((new URLSearchParams(location.search).get("u") || "cjf")
+    .toLowerCase().replace(/[^a-z0-9_-]/g, "").slice(0, 32)) || "cjf";
+
   const state = {
     view:"Dashboard",
     modal:null,            // {type:'metric', key, win} | {type:'score',key} | {type:'goal'} | {type:'session', id}
     live:null,             // set to {syncedAt, source} once live Garmin data is applied
+    profile:PROFILE,       // active profile id
+    profileName:PROFILE,   // display name, filled from data/profiles.json
     week:CURRENT_WEEK,
     schedule:buildSchedule(),
     oneRM:{ bench:{v:82,src:"est",date:"2 Jul"}, squat:{v:110,src:"est",date:"28 Jun"}, deadlift:{v:140,src:"est",date:"25 Jun"} }
@@ -522,7 +529,7 @@
     return "";
   }
   function shell(){
-    const sidebar='<aside class="sidebar"><div class="sidebar-brand" style="display:flex;align-items:center;gap:10px;padding:4px 6px 22px"><div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--warm),var(--coral));display:grid;place-items:center;color:#0E1420">'+ic("sunrise",17)+'</div><div><div style="font-weight:700;font-size:14.5px;color:var(--text);letter-spacing:-0.2px">PerformanceOS</div><div style="font-size:10px;color:var(--muted)">personal \u00b7 Garmin-first</div></div></div>'
+    const sidebar='<aside class="sidebar"><div class="sidebar-brand" style="display:flex;align-items:center;gap:10px;padding:4px 6px 22px"><div style="width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--warm),var(--coral));display:grid;place-items:center;color:#0E1420">'+ic("sunrise",17)+'</div><div><div style="font-weight:700;font-size:14.5px;color:var(--text);letter-spacing:-0.2px">PerformanceOS</div><div style="font-size:10px;color:var(--muted)">'+esc(state.profileName)+' \u00b7 Garmin-first</div></div></div>'
       +'<nav class="navwrap">'+NAV.map(n=>'<button class="nav'+(state.view===n[0]?' navOn':'')+'" data-action="view" data-view="'+n[0]+'">'+ic(n[1],17)+' '+n[0]+'</button>').join("")+'</nav>'
       +'<div class="sidebar-foot" style="margin-top:auto;padding-top:16px"><div class="pcard" style="padding:12px;background:var(--panel2)"><div style="display:flex;align-items:center;gap:7px;font-size:11.5px;color:var(--dim);font-weight:600">'+ic("radio",13)+' Data source</div><div style="font-size:11px;color:var(--muted);margin:6px 0 9px;line-height:1.4">Fixtures modeled on Garmin MCP tool outputs.</div><button class="connectbtn">'+ic("zap",12)+' Connect Garmin MCP</button></div></div></aside>';
     const syncChip=state.live
@@ -639,7 +646,16 @@
     return true;
   }
   function loadLiveData(){
-    fetch("data/garmin.json?t="+Date.now(),{cache:"no-store"})
+    // Registry: resolve the active profile's display name (non-fatal if missing).
+    fetch("data/profiles.json?t="+Date.now(),{cache:"no-store"})
+      .then(r=>r.ok?r.json():null)
+      .then(reg=>{
+        const p=reg && reg.profiles && reg.profiles[state.profile];
+        if(p && p.name){ state.profileName=p.name; render(); }
+      })
+      .catch(()=>{});
+    // This profile's live Garmin data.
+    fetch("data/"+state.profile+"/garmin.json?t="+Date.now(),{cache:"no-store"})
       .then(r=>r.ok?r.json():null)
       .then(d=>{ if(applyLive(d)) render(); })
       .catch(()=>{ /* offline or no file — keep demo fixtures */ });
@@ -655,6 +671,8 @@
     return [
 "You are my endurance running coach. Below is my weekly training check-in for my goal race.",
 "Please review how my week went against the data, then suggest any adjustments to next week's training. Ask me anything you need.",
+"",
+"[profile: "+state.profile+"]   (any plan changes apply ONLY to this profile)",
 "",
 "HOW MY WEEK FELT (I'll fill this in):",
 "- Overall how training felt (1-10) and why:",

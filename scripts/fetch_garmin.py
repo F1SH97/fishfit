@@ -31,7 +31,14 @@ except ImportError:  # pragma: no cover
     print("ERROR: garminconnect not installed. Run: pip install -r scripts/requirements.txt", file=sys.stderr)
     sys.exit(2)
 
-OUT_PATH = Path(__file__).resolve().parent.parent / "data" / "garmin.json"
+# Which profile's data this run writes. Each profile has its own folder and its
+# own token secret; the workflow sets PROFILE per run. Defaults to "cjf".
+import re
+PROFILE = (os.getenv("PROFILE") or "cjf").lower()
+if not re.fullmatch(r"[a-z0-9_-]{1,32}", PROFILE):
+    print(f"ERROR: invalid PROFILE {PROFILE!r}", file=sys.stderr)
+    sys.exit(2)
+OUT_PATH = Path(__file__).resolve().parent.parent / "data" / PROFILE / "garmin.json"
 DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
 MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 

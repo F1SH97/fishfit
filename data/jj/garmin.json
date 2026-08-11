@@ -1,0 +1,4 @@
+{
+  "live": false,
+  "note": "Placeholder for JJ. The Garmin sync overwrites this with live=true once a GARMINTOKENS_JJ secret is configured. While live=false the dashboard shows demo fixtures."
+}

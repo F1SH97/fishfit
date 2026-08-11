@@ -9,10 +9,16 @@ data** through a scheduled sync.
 | File | Purpose |
 |------|---------|
 | `index.html`, `styles.css`, `app.js` | The dashboard (responsive: desktop + mobile). |
-| `data/garmin.json` | Data the dashboard reads at runtime. `live:false` = show demo fixtures. |
-| `scripts/fetch_garmin.py` | Headless fetch of Garmin metrics → `data/garmin.json`. |
+| `data/profiles.json` | Profile registry: who exists, display name, coach persona. |
+| `data/<profile>/garmin.json` | Live Garmin data per profile (`cjf`, `jj`). `live:false` = demo fixtures. |
+| `data/<profile>/profile.json` | Per-profile goals / persona state. |
+| `scripts/fetch_garmin.py` | Headless fetch of Garmin metrics → `data/<PROFILE>/garmin.json`. |
 | `scripts/garmin_auth.py` | One-time local login to mint a CI token. |
 | `.github/workflows/garmin-sync.yml` | Scheduled job that runs the fetch and commits the data. |
+
+Each person is a **profile** with its own `data/<profile>/` folder. The dashboard
+picks a profile from the URL — `?u=cjf` (default) or `?u=jj` — and reads only that
+profile's folder. See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full design.
 
 ## How the Garmin integration works
 
