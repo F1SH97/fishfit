@@ -1,20 +1,26 @@
 {
   "live": true,
-  "syncedAt": "2026-08-11T07:32:38+00:00",
+  "syncedAt": "2026-08-12T07:48:02+00:00",
   "source": "Garmin Connect",
   "metrics": {
+    "vo2": "44.8",
+    "hrv": "107",
+    "sleep": "78",
+    "rhr": "42",
+    "battery": "33",
     "pb5": "28:26",
-    "pb10": "1:03:24",
-    "wdist": "4"
+    "pb10": "1:03:24"
   },
-  "scores": {},
+  "scores": {
+    "readiness": 88
+  },
   "predictions": {
-    "k10": 3450,
+    "k10": 3453,
     "band": [
-      3364,
-      3536
+      3367,
+      3539
     ],
-    "k5": 1599
+    "k5": 1601
   },
   "runs": [
     {
