@@ -470,11 +470,26 @@
     "Chest pain","Shortness of breath before exertion","Dizziness or feeling faint",
     "Headache","Calf pain or swelling","Muscle weakness affecting balance","Decreased fetal movement"
   ];
+  // Single source of truth for the prenatal "not medical advice" wording. Reused
+  // by BOTH the top-of-view disclaimer card and the always-visible page footer so
+  // the two can never drift apart.
+  const PRENATAL_DISCLAIMER_TITLE = "Not medical advice";
+  const PRENATAL_DISCLAIMER_HTML =
+    'This dashboard supports — it does not replace — your doctor, OB/GYN or midwife.'
+    +' In pregnancy: get <b style="color:var(--text)">provider clearance before exercising</b>,'
+    +' go by <b style="color:var(--text)">how you feel</b> (talk-test / effort, never pace or PBs),'
+    +' and <b style="color:var(--text)">stop and seek care</b> if any warning sign appears.';
   function prenatalDisclaimer(){
     return '<div class="pcard" style="padding:16px;border-color:rgba(242,184,92,0.4);background:linear-gradient(90deg,rgba(242,184,92,0.10),rgba(242,184,92,0.02))">'
       +'<div style="display:flex;gap:10px;align-items:flex-start">'+ic("shield-alert",18)
-      +'<div><div style="font-weight:700;font-size:13px;color:var(--warn)">Not medical advice</div>'
-      +'<p style="margin:5px 0 0;font-size:12.5px;color:var(--dim);line-height:1.55">This dashboard supports — it does not replace — your doctor, OB/GYN or midwife. In pregnancy: get <b style="color:var(--text)">provider clearance before exercising</b>, go by <b style="color:var(--text)">how you feel</b> (talk-test / effort, never pace or PBs), and <b style="color:var(--text)">stop and seek care</b> if any warning sign below appears.</p></div></div></div>';
+      +'<div><div style="font-weight:700;font-size:13px;color:var(--warn)">'+PRENATAL_DISCLAIMER_TITLE+'</div>'
+      +'<p style="margin:5px 0 0;font-size:12.5px;color:var(--dim);line-height:1.55">'+PRENATAL_DISCLAIMER_HTML+'</p></div></div></div>';
+  }
+  // Small, always-visible footer shown on EVERY prenatal view (see shell()).
+  // Sourced from the same not-medical-advice string as the disclaimer card above.
+  function prenatalFooter(){
+    return '<footer class="prenatal-foot">'+ic("shield-alert",13)
+      +'<span><b>'+PRENATAL_DISCLAIMER_TITLE+'.</b> '+PRENATAL_DISCLAIMER_HTML+'</span></footer>';
   }
   function prenatalStatusCard(){
     const p=state.pregnancy||{};
@@ -650,7 +665,8 @@
     const main='<main class="main"><header class="topbar"><div><h1 style="margin:0;font-size:19px;font-weight:600;color:var(--text)">'+state.view+'</h1><span style="font-size:12px;color:var(--muted)">'+subtitleFor(state.view)+'</span></div>'
       +'<div style="display:flex;align-items:center;gap:10px">'+(state.dashboard==="prenatal"?'<span class="chip">'+ic("heart-handshake",13)+' By feel, not pace</span>':'<span class="chip">'+ic("calendar",13)+' '+daysTo+' days to '+RACE.name+'</span>')+syncChip+'</div></header>'
       +banner
-      +'<div class="content fade">'+viewHTML()+'</div></main>';
+      +'<div class="content fade">'+viewHTML()+'</div>'
+      +(state.dashboard==="prenatal"?prenatalFooter():"")+'</main>';
     const coachFab='<button class="coachfab" data-action="coach" title="Send your coach a weekly check-in (opens Claude, pre-filled with this week\'s data)">'+ic("message-circle",18)+'<span>Weekly check-in</span></button>';
     return sidebar+main+coachFab;
   }
