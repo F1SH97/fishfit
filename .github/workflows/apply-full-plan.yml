@@ -1,0 +1,61 @@
+name: Apply full plan
+
+# The initial-plan half of the coach loop (Phase B). Where "Apply coach patch"
+# edits an existing plan incrementally, this replaces ONE profile's whole
+# data/<profile>/plan.json — the shape a coach outputs after screening. It
+# validates the plan, writes it path-scoped to that single profile, and opens a
+# PR for you to review and merge. Nothing goes live without your merge tap.
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: "Profile to set the plan for"
+        required: true
+        type: choice
+        options:
+          - cjf
+          - jj
+      plan:
+        description: "Paste the full plan.json (blockStart, currentWeek, weeks[])"
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Validate & write full plan (path-scoped to one profile)
+        env:
+          PROFILE: ${{ inputs.profile }}
+          PLAN: ${{ inputs.plan }}
+        run: python scripts/apply_full_plan.py
+
+      - name: Open a pull request with the new plan
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ! git status --porcelain data/ | grep -q .; then
+            echo "::notice::Plan identical to the current one — no PR opened."
+            exit 0
+          fi
+          branch="coach/full-plan-${{ inputs.profile }}-$(date +%s)"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "coach: set full plan for ${{ inputs.profile }}"
+          git push -u origin "$branch"
+          gh pr create --base main --head "$branch" \
+            --title "Coach: full plan for ${{ inputs.profile }}" \
+            --body "Automated full-plan replace for a single profile's \`plan.json\` (validated and path-scoped to \`data/${{ inputs.profile }}/\`). Review the diff and merge to apply; the dashboard updates on merge."
