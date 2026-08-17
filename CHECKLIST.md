@@ -33,11 +33,11 @@ Claude Project / Claude Code session.
 
 ## Phase B — Plan-building pipeline
 
-- [ ] **[CODE]** Add a **"set full plan"** apply path (extend `apply_plan_patch.py` or a
-      new `apply_full_plan.py` + a `workflow_dispatch`) that validates a whole `plan.json`
+- [x] **[CODE]** Add a **"set full plan"** apply path (`scripts/apply_full_plan.py`
+      + the `Apply full plan` `workflow_dispatch`) that validates a whole `plan.json`
       and commits it **path-scoped** to one profile, opening a PR. (Initial plans need a
       full replace; the existing patch path only does incremental edits.)
-- [ ] **[CODE]** Extend `scripts/test_isolation.py` to cover the full-plan path too.
+- [x] **[CODE]** Extend `scripts/test_isolation.py` to cover the full-plan path too.
 
 ## Phase C — Build the real initial plans
 
