@@ -179,4 +179,18 @@ button:focus-visible,.nav:focus-visible,.seg:focus-visible,.daysel:focus-visible
   .coachfab span{display:none}   /* icon-only pill on phones to save space */
 }
 
+/* Always-visible prenatal safety footer — renders on EVERY ?u=jj view only.
+   Sits at the very bottom of the page (margin-top:auto inside the flex-column
+   .main), stays small and muted, and reserves space so the floating coach
+   check-in button never overlaps its text. */
+.prenatal-foot{margin-top:auto;display:flex;gap:9px;align-items:flex-start;
+  padding:16px 200px 20px 30px;border-top:1px solid var(--line);
+  color:var(--muted);font-size:11px;line-height:1.5;background:rgba(14,20,32,0.4)}
+.prenatal-foot b{color:var(--dim);font-weight:600}
+.prenatal-foot .ic{color:var(--warn);margin-top:1px}
+@media (max-width:760px){
+  /* Phone: full-width text, extra bottom room to clear the icon-only fab. */
+  .prenatal-foot{padding:14px 16px 76px;gap:8px}
+}
+
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
